@@ -1,18 +1,21 @@
-import React, {Component, useState, useEffect} from 'react';
+import React, { Component, useState, useEffect } from 'react';
 
 const App = () => {
   //state
   const [news, setNews] = useState([]);
   const [searchQuery, setSearchQuery] = useState('react');
   const [url, setUrl] = useState('http://hn.algolia.com/api/v1/search?query=react');
+  const [loading, setLoading] = useState(false);
 
   //methods
   const fetchNews = () => {
+    //set loading to true to give a loading effect
+    setLoading(true);
     //this will fetch news from hacker news api
     fetch(url)
-    .then(result => result.json())
-    .then(data => setNews(data.hits))
-    .catch(error => console.log(error));
+      .then(result => result.json())
+      .then(data => (setNews(data.hits), setLoading(false)))
+      .catch(error => console.log(error));
   };
 
   const handleChange = (event) => {
@@ -26,7 +29,7 @@ const App = () => {
   }
 
   //lifecycle hooks
-    //the second argument is an array of items from state telling the useEffect to only fire when there is a change for thos items in state
+  //the second argument is an array of items from state telling the useEffect to only fire when there is a change for thos items in state
   useEffect(() => {
     fetchNews();
   }, [url]);
@@ -35,8 +38,9 @@ const App = () => {
   return (
     <div>
       <h2>News</h2>
+      {loading ? <h2>Loading...</h2> : ''}
       <form onSubmit={handleSubmit}>
-        <input type="text" value={searchQuery} onChange={handleChange}/>
+        <input type="text" value={searchQuery} onChange={handleChange} />
         <button>Search</button>
       </form>
       {
